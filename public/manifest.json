@@ -1,0 +1,17 @@
+{
+  "name": "Habit Tracker",
+  "short_name": "Habits",
+  "description": "Modern, frosted glass habit tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
