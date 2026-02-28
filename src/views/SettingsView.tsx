@@ -1,9 +1,33 @@
-import { Moon, Sun } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Moon, Sun, Download } from 'lucide-react';
 import { useStore } from '../store';
 
 export default function SettingsView() {
   const theme = useStore(s => s.theme);
   const setTheme = useStore(s => s.setTheme);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -36,6 +60,24 @@ export default function SettingsView() {
             </button>
           </div>
         </div>
+
+        {deferredPrompt && (
+          <div className="pt-6 border-t border-glass-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-lg">Uygulamayı Yükle</h3>
+                <p className="text-sm text-muted">Ana ekrana ekle ve çevrimdışı kullan</p>
+              </div>
+              <button
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-invert text-invert-content font-medium shadow-md hover:opacity-90 transition-opacity"
+              >
+                <Download size={18} />
+                <span>Yükle</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
