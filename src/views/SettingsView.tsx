@@ -1,22 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Moon, Sun, Download } from 'lucide-react';
 import { useStore } from '../store';
 
-export default function SettingsView() {
+interface SettingsViewProps {
+  deferredPrompt: any;
+  setDeferredPrompt: (prompt: any) => void;
+}
+
+export default function SettingsView({ deferredPrompt, setDeferredPrompt }: SettingsViewProps) {
   const theme = useStore(s => s.theme);
   const setTheme = useStore(s => s.setTheme);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;

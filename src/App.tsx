@@ -9,11 +9,21 @@ import { useStore } from './store';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'today' | 'calendar' | 'habits' | 'settings'>('today');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const theme = useStore(s => s.theme);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   return (
     <div className="min-h-screen pb-[calc(6rem+env(safe-area-inset-bottom))] pt-8 px-4 max-w-md mx-auto relative">
@@ -28,7 +38,7 @@ export default function App() {
           {activeTab === 'today' && <TodayView />}
           {activeTab === 'calendar' && <CalendarView />}
           {activeTab === 'habits' && <HabitsView />}
-          {activeTab === 'settings' && <SettingsView />}
+          {activeTab === 'settings' && <SettingsView deferredPrompt={deferredPrompt} setDeferredPrompt={setDeferredPrompt} />}
         </motion.div>
       </AnimatePresence>
 
